@@ -1,37 +1,40 @@
 import {
-    Entity,
-    Column,
-    PrimaryGeneratedColumn,
-    CreateDateColumn,
-    UpdateDateColumn,
-    JoinColumn,
-    ManyToOne,
-} from "typeorm";
-import {User} from "../user/userEntity";
-import {Post} from "../post/postEntity";
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  JoinColumn,
+  ManyToOne,
+} from 'typeorm';
+import {User} from '@components/user/userEntity';
+import {Post} from '@components/post/postEntity';
 
-@Entity()
+@Entity('comment')
 export class Comment {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @PrimaryGeneratedColumn()
-    id: number;
+  @Column({
+    length: 300,
+  })
+  description: string;
 
-    @Column({
-        length: 300
-    })
-    text: String;
+  @CreateDateColumn({
+    name: 'create_at',
+  })
+  createdAt: Date;
 
-    @CreateDateColumn()
-    created_at: Date;
+  @UpdateDateColumn({
+    name: 'update_at',
+  })
+  updatedAt: Date;
 
-    @UpdateDateColumn()
-    updated_at: Date;
+  @ManyToOne((type) => Post, (post) => post.comment)
+  @JoinColumn()
+  post: Post;
 
-    @ManyToOne(type => Post, post => post.comment)
-    @JoinColumn()
-    post: Post;
-
-    @ManyToOne(type => User, user => user.comment)
-    @JoinColumn()
-    user: User;
+  @ManyToOne((type) => User, (user) => user.comment)
+  @JoinColumn()
+  user: User;
 }

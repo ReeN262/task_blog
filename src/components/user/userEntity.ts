@@ -1,45 +1,49 @@
-import {Entity, Column, PrimaryGeneratedColumn, OneToMany, JoinColumn} from "typeorm";
-import {Post} from "../post/postEntity";
-import {Like} from "../like/likeEntity";
-import {Comment} from "../comment/commentEntity";
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  JoinColumn, BaseEntity,
+} from 'typeorm';
 
-@Entity()
-export class User {
+import {Post} from '@components/post/postEntity';
+import {Comment} from '@components/comment/commentEntity';
+import {Like} from '@components/like/likeEntity';
 
-    @PrimaryGeneratedColumn()
-    id: number;
+@Entity('user')
+export class User extends BaseEntity {
+  @PrimaryGeneratedColumn()
+  id: Number;
 
-    @Column({
-        length: 50
-    })
-    name: String;
+  @Column({
+    length: 50,
+  })
+  name: string;
 
-    @Column({
-        length: 50
-    })
-    email: String;
+  @Column({
+    length: 50,
+  })
+  email: string;
 
-    @Column({
-        length: 20
-    })
-    phone: String;
+  @Column({
+    length: 20,
+  })
+  phone: string;
 
-    @Column({
-        length: 100
-    })
-    password: String;
+  @Column({
+    length: 100,
+  })
+  password: string;
 
-    @OneToMany(type => Post, post => post.user)
-    @JoinColumn()
-    post: Post[];
+  @OneToMany((type) => Post, (post) => post.user)
+  @JoinColumn()
+  post: Post[];
 
-    @OneToMany(type => Like, like => like.user)
-    @JoinColumn()
-    like: Like[];
+  @OneToMany((type) => Like, (like) => like.user)
+  @JoinColumn()
+  like: Like[];
 
-    @OneToMany(type => Comment, comment => comment.user)
-    @JoinColumn()
-    comment: Comment[];
-
-
+  @OneToMany((type) => Comment, (comment) => comment.user)
+  @JoinColumn()
+  comment: Comment[];
 }

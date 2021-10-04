@@ -1,11 +1,24 @@
-import {User} from "./userEntity";
-import {getConnection} from "typeorm";
+import bcrypt from 'bcrypt';
+import {User} from './userEntity';
 
-export default class userService {
-    public static async reg() {
-        const connection = getConnection();
-        const user = connection.getRepository(User);
-        console.log(user.findOne())
-    }
+
+type FieldName = string;
+type Value = string;
+type InputData = Record<FieldName, Value>;
+
+
+export class UserService {
+  public static async registration(data: InputData) {
+    const salt = bcrypt.genSaltSync(10);
+    const {name, password, email = '', phone = ''} = data;
+    const user = User.create({
+      name: name,
+      password: bcrypt.hashSync(password, salt),
+      email: email,
+      phone: phone,
+    });
+    await user.save();
+
+    return true;
+  }
 }
-

@@ -1,4 +1,8 @@
-import { Router } from "express";
+import {Router} from 'express';
+import {UserController} from '@components/user/userController';
 
-const router = Router();
+const userRouter = Router();
 
+userRouter.post('/registration', UserController.registration);
+
+export {userRouter};

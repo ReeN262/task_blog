@@ -1,16 +1,22 @@
-import {createConnection, getConnection, getRepository} from "typeorm";
-import { User } from "./src/components/user/userEntity";
-import { Post } from "./src/components/post/postEntity";
+import {createConnection} from 'typeorm';
+import {User} from '@components/user/userEntity';
+import {Post} from '@components/post/postEntity';
+import {Like} from '@components/like/likeEntity';
+import {Comment} from '@components/comment/commentEntity';
 
-createConnection({
-    type: "postgres",
-    host: "localhost",
+
+const connection = async () => {
+  await createConnection({
+    type: 'postgres',
+    host: 'localhost',
     port: 5432,
-    username: process.env.DBUSER,
+    username: process.env.DB_USER,
     password: process.env.PASSWORD,
     database: process.env.DATABASE,
-    entities: [User, Post],
+    entities: [User, Post, Like, Comment],
     synchronize: true,
-    logging: false
-})
+    logging: false,
+  });
+};
 
+export = connection()

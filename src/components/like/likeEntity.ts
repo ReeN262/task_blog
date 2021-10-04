@@ -1,35 +1,52 @@
 import {
-    Entity,
-    Column,
-    PrimaryGeneratedColumn,
-    CreateDateColumn,
-    UpdateDateColumn,
-    JoinColumn,
-    ManyToOne,
-} from "typeorm";
-import {User} from "../user/userEntity";
-import {Post} from "../post/postEntity";
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  JoinColumn,
+  ManyToOne,
+} from 'typeorm';
+import {User} from '@components/user/userEntity';
+import {Post} from '@components/post/postEntity';
+import {Comment} from '@components/comment/commentEntity';
 
-@Entity()
+@Entity('like')
 export class Like {
+  @PrimaryGeneratedColumn()
+  id: Number;
 
-    @PrimaryGeneratedColumn()
-    id: number;
+  @Column('boolean')
+  isLike: boolean;
 
-    @Column()
-    like: Boolean;
+  @Column()
+  entityType: string;
 
-    @CreateDateColumn()
-    created_at: Date;
+  @CreateDateColumn({
+    name: 'create_at',
+  })
+  createdAt: Date;
 
-    @UpdateDateColumn()
-    updated_at: Date;
+  @UpdateDateColumn({
+    name: 'update_at',
+  })
+  updatedAt: Date;
 
-    @ManyToOne(type => Post, post => post.like)
-    @JoinColumn()
-    post: Post;
+  @ManyToOne((type) => Post, (post) => post.like)
+  @JoinColumn({
+    name: 'postID',
+  })
+  post: Post;
 
-    @ManyToOne(type => User, user => user.like)
-    @JoinColumn()
-    user: User;
+  @ManyToOne((type) => User, (user) => user.like)
+  @JoinColumn({
+    name: 'commentID',
+  })
+  comment: Comment;
+
+  @ManyToOne((type) => User, (user) => user.like)
+  @JoinColumn({
+    name: 'userID',
+  })
+  user: User;
 }

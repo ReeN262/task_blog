@@ -1,49 +1,51 @@
 import {
-    Entity,
-    Column,
-    PrimaryGeneratedColumn,
-    CreateDateColumn,
-    UpdateDateColumn,
-    JoinColumn,
-    ManyToOne,
-    OneToMany
-} from "typeorm";
-import {User} from "../user/userEntity";
-import {Like} from "../like/likeEntity";
-import {Comment} from "../comment/commentEntity";
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
+import {User} from '@components/user/userEntity';
+import {Like} from '@components/like/likeEntity';
+import {Comment} from '@components/comment/commentEntity';
 
-@Entity()
+@Entity('post')
 export class Post {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @PrimaryGeneratedColumn()
-    id: number;
+  @Column({
+    length: 200,
+  })
+  title: string;
 
-    @Column({
-        length: 200
-    })
-    title: String;
+  @Column({
+    length: 2000,
+  })
+  description: string;
 
-    @Column({
-        length: 2000
-    })
-    description: String;
+  @CreateDateColumn({
+    name: 'create_at',
+  })
+  createdAt: Date;
 
-    @CreateDateColumn()
-    created_at: Date;
+  @UpdateDateColumn({
+    name: 'update_at',
+  })
+  updatedAt: Date;
 
-    @UpdateDateColumn()
-    updated_at: Date;
+  @ManyToOne((type) => User, (user) => user.post)
+  @JoinColumn()
+  user: User;
 
-    @ManyToOne(type => User, user => user.post)
-    @JoinColumn()
-    user: User;
+  @OneToMany((type) => Like, (like) => like.post)
+  @JoinColumn()
+  like: Like[];
 
-    @OneToMany(type => Like, like => like.post)
-    @JoinColumn()
-    like: Like[];
-
-    @OneToMany(type => Comment, comment => comment.post)
-    @JoinColumn()
-    comment: Comment[];
-
+  @OneToMany((type) => Comment, (comment) => comment.post)
+  @JoinColumn()
+  comment: Comment[];
 }
