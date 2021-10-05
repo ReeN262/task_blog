@@ -1,8 +1,10 @@
 import {Router} from 'express';
-import {UserController} from '@components/user/userController';
+import * as UserController from '@components/user/userController';
+import {passport} from '../../middleware/passport';
 
 const userRouter = Router();
 
-userRouter.post('/registration', UserController.registration);
+userRouter.post('/sign-up', [UserController.signUp]);
+// userRouter.get('/id', [passport, UserController.getId]);
 
 export {userRouter};

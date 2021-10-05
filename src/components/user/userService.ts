@@ -1,14 +1,13 @@
 import bcrypt from 'bcrypt';
 import {User} from './userEntity';
 
-
 type FieldName = string;
 type Value = string;
 type InputData = Record<FieldName, Value>;
-
+type userId = Number
 
 export class UserService {
-  public static async registration(data: InputData) {
+  public static async signUp(data: InputData): Promise<userId> {
     const salt = bcrypt.genSaltSync(10);
     const {name, password, email = '', phone = ''} = data;
     const user = User.create({
@@ -17,8 +16,8 @@ export class UserService {
       email: email,
       phone: phone,
     });
-    await user.save();
+    const saveNewUser = await user.save();
 
-    return true;
+    return saveNewUser.id;
   }
 }

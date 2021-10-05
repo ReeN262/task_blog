@@ -1,10 +1,18 @@
 import {UserService} from './userService';
 import {Request, Response} from 'express';
+import {resultRes} from '@components/helper/responseAnswer';
 
-
-export class UserController {
-  public static async registration(req: Request, res: Response) {
-    const result = await UserService.registration(req.body);
-    return res.json(result);
+declare module 'express-session' {
+  export interface SessionData {
+    userId: any;
   }
 }
+
+const signUp = async (req: Request, res: Response) => {
+  req.session.userId = await UserService.signUp(req.body);
+
+  resultRes(res, {success: true});
+};
+
+export {signUp};
+
