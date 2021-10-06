@@ -1,23 +1,26 @@
 import {
   Entity,
   Column,
-  PrimaryGeneratedColumn,
   CreateDateColumn,
-  UpdateDateColumn,
   JoinColumn,
-  ManyToOne,
+  ManyToOne, PrimaryGeneratedColumn,
 } from 'typeorm';
 import {User} from '@components/user/userEntity';
 import {Post} from '@components/post/postEntity';
 import {Comment} from '@components/comment/commentEntity';
+import {PolymorphicParent} from 'typeorm-polymorphic';
+import {PolymorphicChildInterface} from 'typeorm-polymorphic/dist/polymorphic.interface';
 
 @Entity('like')
-export class Like {
+export class Like implements PolymorphicChildInterface {
   @PrimaryGeneratedColumn()
-  id: Number;
+  id: number;
 
-  @Column('boolean')
-  isLike: boolean;
+  @PolymorphicParent(() => [Comment, Post])
+  owner: Comment | Post
+
+  @Column()
+  entityId: number;
 
   @Column()
   entityType: string;
@@ -26,23 +29,6 @@ export class Like {
     name: 'create_at',
   })
   createdAt: Date;
-
-  @UpdateDateColumn({
-    name: 'update_at',
-  })
-  updatedAt: Date;
-
-  @ManyToOne((type) => Post, (post) => post.like)
-  @JoinColumn({
-    name: 'postID',
-  })
-  post: Post;
-
-  @ManyToOne((type) => User, (user) => user.like)
-  @JoinColumn({
-    name: 'commentID',
-  })
-  comment: Comment;
 
   @ManyToOne((type) => User, (user) => user.like)
   @JoinColumn({

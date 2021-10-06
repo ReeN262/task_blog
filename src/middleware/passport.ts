@@ -11,19 +11,19 @@ declare global {
     }
   }
 }
-const passport = async (req: Request, res: Response, next: NextFunction) => {
+
+export const passport = async (req: Request, res: Response, next: NextFunction) => {
   if (!req.session.userId) {
-    errorRes(res, 'not authorized', 401);
+    return errorRes(res, 'not authorized', 401);
   }
 
   const userData = await User.findOne(req.session.userId);
 
   if (!userData) {
-    errorRes(res, 'not authorized', 401);
+    return errorRes(res, 'not authorized', 401);
   }
 
   req.user = userData;
   next();
 };
 
-export {passport};

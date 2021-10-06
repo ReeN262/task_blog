@@ -9,7 +9,6 @@ import {
   OneToMany,
 } from 'typeorm';
 import {User} from '@components/user/userEntity';
-import {Like} from '@components/like/likeEntity';
 import {Comment} from '@components/comment/commentEntity';
 
 @Entity('post')
@@ -40,10 +39,6 @@ export class Post {
   @ManyToOne((type) => User, (user) => user.post)
   @JoinColumn()
   user: User;
-
-  @OneToMany((type) => Like, (like) => like.post)
-  @JoinColumn()
-  like: Like[];
 
   @OneToMany((type) => Comment, (comment) => comment.post)
   @JoinColumn()

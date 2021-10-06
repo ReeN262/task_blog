@@ -25,7 +25,7 @@ const main = async () => {
         port: 6379,
         client: client,
       }),
-      secret: 'kurwusko',
+      secret: `${process.env.SECRET}`,
       resave: false,
       saveUninitialized: true,
       // cookie: {secure: true},

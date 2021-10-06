@@ -1,6 +1,6 @@
-import {UserService} from './userService';
+import * as UserService from './userService';
 import {Request, Response} from 'express';
-import {resultRes} from '@components/helper/responseAnswer';
+import {errorRes, resultRes} from '@components/helper/responseAnswer';
 
 declare module 'express-session' {
   export interface SessionData {
@@ -8,11 +8,32 @@ declare module 'express-session' {
   }
 }
 
-const signUp = async (req: Request, res: Response) => {
-  req.session.userId = await UserService.signUp(req.body);
+export const signUp = async (req: Request, res: Response) => {
+  const newUserId = await UserService.signUp(req.body);
 
-  resultRes(res, {success: true});
+  if (newUserId) {
+    req.session.userId = newUserId;
+    return resultRes(res, {success: true});
+  } else {
+    return errorRes(res, 'Its login already in use', 400);
+  }
 };
 
-export {signUp};
+export const signIn = async (req: Request, res: Response) => {
+  const userId = await UserService.signIn(req.body);
+
+  if (userId) {
+    req.session.userId = userId;
+    return resultRes(res, {success: true});
+  } else {
+    return errorRes(res, 'Invalid login or password', 400);
+  }
+};
+
+export const logout = async (req: Request, res: Response) => {
+  req.session.destroy(()=> {
+    return resultRes(res, {success: true} );
+  });
+};
+
 

@@ -13,7 +13,7 @@ import {Like} from '@components/like/likeEntity';
 @Entity('user')
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
-  id: Number;
+  id: number;
 
   @Column({
     length: 50,
