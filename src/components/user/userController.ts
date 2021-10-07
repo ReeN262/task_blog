@@ -1,6 +1,6 @@
 import * as UserService from './userService';
 import {Request, Response} from 'express';
-import {errorRes, resultRes} from '@components/helper/responseAnswer';
+import {errorRes, resultRes} from '@helper/responseAnswer';
 
 declare module 'express-session' {
   export interface SessionData {

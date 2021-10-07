@@ -1,5 +1,5 @@
 import {NextFunction, Response, Request} from 'express';
-import {errorRes} from '@components/helper/responseAnswer';
+import {errorRes} from '@components/../helper/responseAnswer';
 import {User} from '@components/user/userEntity';
 
 declare global {

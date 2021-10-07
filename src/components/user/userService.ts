@@ -4,7 +4,7 @@ import {User} from './userEntity';
 type FieldName = string;
 type Value = string;
 type InputData = Record<FieldName, Value>;
-type UserID = number
+type UserID = number | string;
 
 export const signUp = async (data: InputData): Promise<UserID | false> => {
   const salt = bcrypt.genSaltSync(10);
@@ -44,6 +44,10 @@ export const signIn = async (data: InputData): Promise<UserID | false> => {
   } else {
     return false;
   }
+};
+
+export const findUserById = async (id: UserID) => {
+  return await User.findOne(id);
 };
 
 

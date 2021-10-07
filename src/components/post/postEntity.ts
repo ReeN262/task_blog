@@ -6,13 +6,13 @@ import {
   UpdateDateColumn,
   JoinColumn,
   ManyToOne,
-  OneToMany,
+  OneToMany, BaseEntity,
 } from 'typeorm';
 import {User} from '@components/user/userEntity';
 import {Comment} from '@components/comment/commentEntity';
 
 @Entity('post')
-export class Post {
+export class Post extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -37,7 +37,7 @@ export class Post {
   updatedAt: Date;
 
   @ManyToOne((type) => User, (user) => user.post)
-  @JoinColumn()
+  @JoinColumn({name: 'userId'})
   user: User;
 
   @OneToMany((type) => Comment, (comment) => comment.post)
