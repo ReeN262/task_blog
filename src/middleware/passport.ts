@@ -7,7 +7,7 @@ declare global {
   namespace Express {
     // eslint-disable-next-line no-unused-vars
     interface Request {
-      user? : Record<string, any>
+      user: any
     }
   }
 }
@@ -17,13 +17,12 @@ export const passport = async (req: Request, res: Response, next: NextFunction) 
     return errorRes(res, 'not authorized', 401);
   }
 
-  const userData = await User.findOne(req.session.userId);
+  req.user = await User.findOne(req.session.userId);
 
-  if (!userData) {
+  if (!req.user) {
     return errorRes(res, 'not authorized', 401);
   }
 
-  req.user = userData;
   next();
 };
 

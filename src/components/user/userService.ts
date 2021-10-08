@@ -46,7 +46,7 @@ export const signIn = async (data: InputData): Promise<UserID | false> => {
   }
 };
 
-export const findUserById = async (id: UserID) => {
+export const findUserById = async (id: string) => {
   return await User.findOne(id);
 };
 

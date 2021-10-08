@@ -33,5 +33,25 @@ export const getAllUserPost = async (req: Request, res: Response) => {
 };
 
 export const getAllPost = async (req: Request, res: Response) => {
-  return resultRes(res, await PostService.getAllPost());
+  return resultRes(res, await PostService.getAllPost(req.query));
+};
+
+export const updatePost = async (req: Request, res: Response) => {
+  const updatedPost = await PostService.updatePost(req.body, req.user);
+
+  if (updatedPost) {
+    return resultRes(res, {data: updatedPost});
+  } else {
+    errorRes(res, 'This is not your post', 400);
+  }
+};
+
+export const deleteOnePost = async (req: Request, res: Response) => {
+  const postDelete = await PostService.deleteOnePost(req.params.postId, req.user);
+
+  if (postDelete) {
+    return resultRes(res, {deletePost: postDelete});
+  } else {
+    errorRes(res, 'This is not your post', 400);
+  }
 };
