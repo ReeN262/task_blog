@@ -1,17 +1,20 @@
 import bcrypt from 'bcrypt';
 import {User} from './userEntity';
+import {getRepository} from 'typeorm';
 
-type FieldName = string;
-type Value = string;
-type InputData = Record<FieldName, Value>;
-type UserID = number | string;
+type UserId = number;
 
-export const signUp = async (data: InputData): Promise<UserID | false> => {
+interface InputData {
+  name: string,
+  password: string,
+  email: string,
+  phone: string,
+  login: string,
+}
+
+export const createNewUser = async (data: InputData): Promise<UserId> => {
   const salt = bcrypt.genSaltSync(10);
-  const {name, password, email = '', phone = ''} = data;
-  const loginAlreadyUse = await User.findOne({email, phone});
-
-  if (loginAlreadyUse) return false;
+  const {name, password, email='', phone=''} = data;
 
   const user = User.create({
     name: name,
@@ -19,35 +22,25 @@ export const signUp = async (data: InputData): Promise<UserID | false> => {
     email: email,
     phone: phone,
   });
-  const saveNewUser = await user.save();
+  await user.save();
 
-  return saveNewUser.id;
+  return user.id;
 };
 
-export const findForUserByLogin = async (login: string): Promise<User | false> => {
-  const findByEmail = await User.findOne({email: login});
-  const findByPhone = await User.findOne({phone: login});
+export const findForUserByLogin = (login: string): Promise<User | undefined> => getRepository(User)
+    .createQueryBuilder('user')
+    .where({email: login})
+    .orWhere({phone: login})
+    .getOne();
 
-  if (findByEmail) return findByEmail;
-  else if (findByPhone) return findByPhone;
-  else return false;
+export const passwordVerification = (verifyPassword: string, userPassword: string = ''): boolean => {
+  return bcrypt.compareSync(verifyPassword, userPassword);
 };
 
-export const signIn = async (data: InputData): Promise<UserID | false> => {
-  const {login, password} = data;
-  const user = await findForUserByLogin(login) as User;
-
-  if (user) {
-    const passwordIsTrue = bcrypt.compareSync(password, user.password);
-    if (passwordIsTrue) return user.id;
-    else return false;
-  } else {
-    return false;
-  }
+export const findUserByFilter = async (filter: string): Promise<User | undefined> => {
+  return await User.findOne(filter);
 };
 
-export const findUserById = async (id: string) => {
+export const findUserById = async (id: string | undefined): Promise<User | undefined> => {
   return await User.findOne(id);
 };
-
-

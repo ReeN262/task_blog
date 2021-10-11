@@ -35,15 +35,15 @@ export class User extends BaseEntity {
   })
   password: string;
 
-  @OneToMany((type) => Post, (post) => post.user)
+  @OneToMany(() => Post, (post) => post.user)
   @JoinColumn()
   post: Post[];
 
-  @OneToMany((type) => Like, (like) => like.user)
+  @OneToMany(() => Like, (like) => like.user)
   @JoinColumn()
   like: Like[];
 
-  @OneToMany((type) => Comment, (comment) => comment.user)
+  @OneToMany(() => Comment, (comment) => comment.user)
   @JoinColumn()
   comment: Comment[];
 }
