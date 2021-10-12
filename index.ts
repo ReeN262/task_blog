@@ -8,6 +8,7 @@ import connectRedis from 'connect-redis';
 import connectionDb from './db';
 import {userRouter} from '@components/user/userRouter';
 import {postRouter} from '@components/post/postRouter';
+import {commentRouter} from '@components/comment/commentRouter';
 
 const client = redis.createClient();
 const redisStore = connectRedis(session);
@@ -31,8 +32,9 @@ const main = async () => {
       saveUninitialized: true,
       // cookie: {secure: true},
     }));
-    app.use('/post', postRouter);
     app.use('/account', userRouter);
+    app.use('/post', postRouter);
+    app.use('/comment', commentRouter);
 
     app.listen(process.env.PORT, () => console.log('Server start'));
   } catch (error) {

@@ -30,9 +30,9 @@ export class Like implements PolymorphicChildInterface {
   })
   createdAt: Date;
 
-  @ManyToOne((type) => User, (user) => user.like)
+  @ManyToOne(() => User, (user) => user.like)
   @JoinColumn({
-    name: 'userID',
+    name: 'userId',
   })
   user: User;
 }

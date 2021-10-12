@@ -68,10 +68,7 @@ export const getAllPost = async (data: InputData): Promise<Array<Post>> => {
   return getPostInArrAndSmallDescription(allPost);
 };
 
-export const findPostByFilter = (filter: Filter): Promise<Post | undefined> => {
-  console.log(filter);
-  return Post.findOne(filter);
-};
+export const findPostByFilter = (filter: Filter): Promise<Post | undefined> => Post.findOne(filter);
 
 export const updatePost = async (data: InputData, post: Post): Promise<Post> => {
   const {title = null, description = null} = data;
@@ -85,3 +82,5 @@ export const updatePost = async (data: InputData, post: Post): Promise<Post> => 
 };
 
 export const deleteOnePost = async (postId: number): Promise<DeleteResult> => Post.delete(postId);
+
+export const findPostById = (id: number | string): Promise<Post | undefined> => Post.findOne(id);

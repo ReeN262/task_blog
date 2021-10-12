@@ -5,13 +5,13 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   JoinColumn,
-  ManyToOne,
+  ManyToOne, BaseEntity,
 } from 'typeorm';
 import {User} from '@components/user/userEntity';
 import {Post} from '@components/post/postEntity';
 
 @Entity('comment')
-export class Comment {
+export class Comment extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -30,11 +30,11 @@ export class Comment {
   })
   updatedAt: Date;
 
-  @ManyToOne((type) => Post, (post) => post.comment)
+  @ManyToOne(() => Post, (post) => post.comment)
   @JoinColumn()
   post: Post;
 
-  @ManyToOne((type) => User, (user) => user.comment)
+  @ManyToOne(() => User, (user) => user.comment)
   @JoinColumn()
   user: User;
 }
