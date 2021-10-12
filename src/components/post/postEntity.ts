@@ -36,11 +36,11 @@ export class Post extends BaseEntity {
   })
   updatedAt: Date;
 
-  @ManyToOne((type) => User, (user) => user.post)
-  @JoinColumn({name: 'userId'})
+  @ManyToOne(() => User, (user) => user.post)
+  @JoinColumn()
   user: User;
 
-  @OneToMany((type) => Comment, (comment) => comment.post)
+  @OneToMany(() => Comment, (comment) => comment.post)
   @JoinColumn()
   comment: Comment[];
 }

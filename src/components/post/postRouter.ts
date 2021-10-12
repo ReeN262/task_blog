@@ -2,15 +2,39 @@ import {Router} from 'express';
 import * as PostController from './postController';
 import {passport} from '@middleware/passport';
 import {validation} from '@middleware/validation';
-import {postSchema} from '@components/post/postSchema';
+import * as postSchema from '@components/post/postSchema';
 
 const postRouter = Router();
 
-postRouter.post('/create', [passport, validation(postSchema).validate, PostController.createPost]);
-postRouter.get('/getOne/:postId', [passport, PostController.getOnePost]);
-postRouter.get('/getAllUserPost', [passport, PostController.getAllUserPost]);
-postRouter.get('/getAllPost', [passport, PostController.getAllPost]);
-postRouter.put('/update', [passport, PostController.updatePost]);
-postRouter.delete('/delete/:postId', [passport, PostController.deleteOnePost]);
+postRouter.post('/create', [
+  passport,
+  validation(postSchema.postCreate).body,
+  PostController.createPost,
+]);
+postRouter.get('/getOne/:id', [
+  passport,
+  validation(postSchema.postId).params,
+  PostController.getOnePost,
+]);
+postRouter.get('/getAllUserPost', [
+  passport,
+  validation(postSchema.allUserPost).query,
+  PostController.getAllUserPost,
+]);
+postRouter.get('/getAllPost', [
+  passport,
+  validation(postSchema.allPost).query,
+  PostController.getAllPost,
+]);
+postRouter.put('/update', [
+  passport,
+  validation(postSchema.update).body,
+  PostController.updatePost,
+]);
+postRouter.delete('/delete/:id', [
+  passport,
+  validation(postSchema.postId).params,
+  PostController.deleteOnePost,
+]);
 
 export {postRouter};

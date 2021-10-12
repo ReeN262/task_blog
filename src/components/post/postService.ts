@@ -1,100 +1,87 @@
 import {Post} from '@components/post/postEntity';
-import {findUserById} from '@components/user/userService';
+import {DeleteResult, getRepository} from 'typeorm';
 
-type FieldName = string;
-type Value = string;
-type InputData = Record<FieldName, Value>;
-type User = Record<FieldName, Value>;
-type InputQuery = Record<string, any> ;
+interface PostI {
+  title: string,
+  description: string,
+  userId: number,
+  postId: number | string;
+  skip: number,
+  offset: number,
+}
+interface UserI {
+  id?: number;
+  name?: string,
+  password?: string,
+  email?: string,
+  phone?: string,
+}
+interface FilterI {
+  id: number,
+  user: UserI;
+}
+type Filter = Partial<FilterI>
+type InputData = Partial<PostI>
 
-export const createPost = async (data: InputData, user: User) => {
-  const {title, description} = data;
+export const createPost = async (data: InputData, user: UserI): Promise<Post> => {
   const newPost = Post.create({
-    title: title,
-    description: description,
+    title: data.title,
+    description: data.description,
     user: user,
   });
+  await newPost.save();
 
-  if (newPost) {
-    const {createdAt, id} = await newPost.save();
-    return {data: {id, title, description, createdAt}};
-  } else {
-    return false;
-  }
+  return newPost;
 };
 
-export const getOnePost = async (postId: string) => {
-  return await Post.findOne(postId);
-};
+export const getOnePost = async (postId: string): Promise<Post | undefined> => await Post.findOne(postId);
 
-export const getPostInArrAndSmallDescription = (arrPosts: any) => {
-  return arrPosts.map((post: any) => {
-    return {
-      id: post.id,
-      tittle: post.title,
-      createdAt: post.createdAt,
-      description: post.description.length < 200 ? post.description : `${post.description.substr(0, 200)}...`,
-    };
-  });
-};
+export const getPostInArrAndSmallDescription = (arrPosts: any): Array<Post> => arrPosts.map((post: any) => {
+  return {
+    id: post.id,
+    tittle: post.title,
+    createdAt: post.createdAt,
+    description: post.description.length < 200 ? post.description : `${post.description.substr(0, 200)}...`,
+  };
+});
 
-export const getAllUserPost = async (data: InputQuery) => {
-  const {userId, skip = 0, offset = 30} = data;
-  const user = await findUserById(userId);
+export const getAllUserPost = async (data: InputData, user: UserI): Promise<Array<Post>> => {
+  const arrPosts = await getRepository(Post)
+      .createQueryBuilder('post')
+      .where({user: user})
+      .orderBy({create_at: 'DESC'})
+      .skip(data.skip)
+      .take(data.offset)
+      .getMany();
 
-  const arrPosts = await Post.find({
-    where: {
-      user,
-    },
-    order: {
-      createdAt: 'DESC',
-    },
-    skip: skip,
-    take: offset,
-  });
   return getPostInArrAndSmallDescription(arrPosts);
 };
 
-export const getAllPost = async (data: InputQuery) => {
-  const {skip = 0, offset = 30} = data;
-  const allPost = await Post.find({
-    order: {
-      createdAt: 'DESC',
-    },
-    skip: skip,
-    take: offset,
-  });
-  return getPostInArrAndSmallDescription(Array.from(allPost));
+export const getAllPost = async (data: InputData): Promise<Array<Post>> => {
+  const allPost = await getRepository(Post)
+      .createQueryBuilder('post')
+      .orderBy({create_at: 'DESC'})
+      .skip(data.skip)
+      .take(data.offset)
+      .getMany();
+
+  return getPostInArrAndSmallDescription(allPost);
 };
 
-// функцию апдейт переделаю
-
-export const updatePost = async (data: InputData, user: User) => {
-  const {postId, title = null, description = null} = data;
-  const findPost = await Post.findOne({
-    where: {
-      id: postId,
-      user: user,
-    },
-  });
-
-  if (!findPost) return false;
-
-  findPost.title = title ? title : findPost.title;
-  findPost.description = description ? description : findPost.description;
-
-  return await findPost.save();
+export const findPostByFilter = (filter: Filter): Promise<Post | undefined> => {
+  console.log(filter);
+  return Post.findOne(filter);
 };
 
-export const deleteOnePost = async (postId: string, user: User) => {
-  const userPost = await Post.findOne({where: {id: postId, user}}) as Post;
+export const updatePost = async (data: InputData, post: Post): Promise<Post> => {
+  const {title = null, description = null} = data;
 
-  if (!userPost) return false;
+  post.title = title || post.title;
+  post.description = description || post.description;
 
-  const postDelete = await Post.delete(userPost.id);
+  await post.save();
 
-  if (!postDelete) return false;
-
-  return userPost;
+  return post;
 };
 
+export const deleteOnePost = async (postId: number): Promise<DeleteResult> => Post.delete(postId);
