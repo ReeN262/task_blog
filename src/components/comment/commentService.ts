@@ -45,6 +45,6 @@ export const update = async (commentId: string, description: string): Promise<Co
 
 export const findCommentByFilter = (filter: Filter): Promise<Comment | undefined> => Comment.findOne(filter);
 
-export const findCommentById = (id: string): Promise<Comment | undefined> => Comment.findOne(id);
+export const findCommentById = (id: string | number): Promise<Comment | undefined> => Comment.findOne(id);
 
 export const deleteComment = async (commentId: number): Promise<DeleteResult> => Comment.delete(commentId);

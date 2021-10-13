@@ -3,7 +3,7 @@ import {
   Column,
   CreateDateColumn,
   JoinColumn,
-  ManyToOne, PrimaryGeneratedColumn,
+  ManyToOne, PrimaryGeneratedColumn, BaseEntity,
 } from 'typeorm';
 import {User} from '@components/user/userEntity';
 import {Post} from '@components/post/postEntity';
@@ -12,7 +12,7 @@ import {PolymorphicParent} from 'typeorm-polymorphic';
 import {PolymorphicChildInterface} from 'typeorm-polymorphic/dist/polymorphic.interface';
 
 @Entity('like')
-export class Like implements PolymorphicChildInterface {
+export class Like extends BaseEntity implements PolymorphicChildInterface {
   @PrimaryGeneratedColumn()
   id: number;
 

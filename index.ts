@@ -9,6 +9,7 @@ import connectionDb from './db';
 import {userRouter} from '@components/user/userRouter';
 import {postRouter} from '@components/post/postRouter';
 import {commentRouter} from '@components/comment/commentRouter';
+import likeRouter from '@components/like/likeRouter';
 
 const client = redis.createClient();
 const redisStore = connectRedis(session);
@@ -32,6 +33,7 @@ const main = async () => {
       saveUninitialized: true,
       // cookie: {secure: true},
     }));
+    app.use('/like', likeRouter);
     app.use('/account', userRouter);
     app.use('/post', postRouter);
     app.use('/comment', commentRouter);
