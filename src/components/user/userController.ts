@@ -5,7 +5,7 @@ import {User} from '@components/user/userEntity';
 
 declare module 'express-session' {
   export interface SessionData {
-    userId: any;
+    userId: number;
   }
 }
 
@@ -30,7 +30,7 @@ export const signIn = async (req: Request, res: Response) => {
 };
 
 export const logout = async (req: Request, res: Response) => {
-  req.session.destroy(()=> {
+  req.session.destroy(() => {
     return resultRes(res, {success: true} );
   });
 };

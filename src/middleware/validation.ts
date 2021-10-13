@@ -1,15 +1,33 @@
-import {z} from 'zod';
+import * as z from 'zod';
 import {NextFunction, Request, Response} from 'express';
-import {resultRes} from '@components/../helper/responseAnswer';
+import {errorRes} from '@helper/responseAnswer';
 
-export const validation = (schema: z.Schema<unknown>) => {
+export const validation = (schema: z.Schema<any>) => {
   return {
-    validate(req: Request, res: Response, next: NextFunction) {
+    body: (req: Request, res: Response, next: NextFunction) => {
       const result = schema.safeParse(req.body);
       if (!result.success) {
-        return resultRes(res, result.error);
+        return errorRes(res, result.error, 400);
       }
+      next();
+    },
+    query: (req: Request, res: Response, next: NextFunction) => {
+      const result = schema.safeParse(req.query);
+      if (!result.success) {
+        return errorRes(res, result.error, 400);
+      }
+      req.query = result.data;
+      next();
+    },
+    params: (req: Request, res: Response, next: NextFunction) => {
+      const result = schema.safeParse(req.params);
+      if (!result.success) {
+        return errorRes(res, result.error, 400);
+      }
+      req.params = result.data;
       next();
     },
   };
 };
+
+
