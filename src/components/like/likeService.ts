@@ -17,7 +17,7 @@ type TLike = Partial<LikeI>
 
 export const like = async (data: TLike, user: User) => {
   const owner = 'post' === data.entityType ? new Post : new Comment;
-  const addLike = await Like.create({
+  const addLike = await getRepository(Like).create({
     owner: owner,
     user,
     entityId: data.entityId,
@@ -54,3 +54,14 @@ export const getAllLike = async (data: TLike): Promise<Array<Like>> => getReposi
     .getMany();
 
 export const removeLike = async (like: Like): Promise<Like> => Like.remove(like);
+
+// export const countLikeByPost = async (postId: number) => {
+//   return await Like
+//       .createQueryBuilder('like')
+//       .where({
+//         entityId: postId,
+//         entityType: 'post',
+//       })
+//       .select('COUNT(like.entityId)', 'count')
+//       .getRawOne();
+// };

@@ -41,7 +41,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Like, (like) => like.user)
   @JoinColumn()
-  like: Like[];
+  likes: Like[];
 
   @OneToMany(() => Comment, (comment) => comment.user)
   @JoinColumn()

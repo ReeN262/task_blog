@@ -1,7 +1,6 @@
 import {Post} from '@components/post/postEntity';
 import {getRepository} from 'typeorm';
 
-
 interface PostI {
   title: string,
   description: string,
@@ -48,7 +47,7 @@ export const getPostInArrAndSmallDescription = (arrPosts: any): Array<Post> => a
 
 export const getAllUserPost = async (data: InputData, user: UserI): Promise<Array<Post>> => {
   const arrPosts = await getRepository(Post)
-      .createQueryBuilder('post')
+      .createQueryBuilder()
       .where({user: user})
       .orderBy({create_at: 'DESC'})
       .skip(data.skip)
@@ -64,7 +63,6 @@ export const getAllPost = async (data: InputData): Promise<Array<Post>> => {
       .orderBy({create_at: 'DESC'})
       .skip(data.skip)
       .take(data.offset)
-      .loadRelationCountAndMap('post.Count', 'post.like', 'like')
       .getMany();
 
   return getPostInArrAndSmallDescription(allPost);

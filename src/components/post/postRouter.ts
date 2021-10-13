@@ -13,7 +13,7 @@ postRouter.post('/create', [
 ]);
 postRouter.get('/getOne/:id', [
   passport,
-  validation(postSchema.postId).body,
+  validation(postSchema.postId).params,
   PostController.getOnePost,
 ]);
 postRouter.get('/getAllUserPost', [

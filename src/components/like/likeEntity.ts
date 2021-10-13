@@ -11,7 +11,7 @@ import {Comment} from '@components/comment/commentEntity';
 import {PolymorphicParent} from 'typeorm-polymorphic';
 import {PolymorphicChildInterface} from 'typeorm-polymorphic/dist/polymorphic.interface';
 
-@Entity('like')
+@Entity('likes')
 export class Like extends BaseEntity implements PolymorphicChildInterface {
   @PrimaryGeneratedColumn()
   id: number;
@@ -30,7 +30,7 @@ export class Like extends BaseEntity implements PolymorphicChildInterface {
   })
   createdAt: Date;
 
-  @ManyToOne(() => User, (user) => user.like)
+  @ManyToOne(() => User, (user) => user.likes)
   @JoinColumn({
     name: 'userId',
   })
