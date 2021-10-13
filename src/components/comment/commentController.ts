@@ -40,10 +40,13 @@ export const updateComment = async (req: Request, res: Response) => {
 };
 
 export const deleteComment = async (req: Request, res: Response) => {
-  const findComment = await CommentService.findCommentById(req.params.id);
+  const findComment = await CommentService.findCommentByFilter({
+    id: req.body.commentId,
+    user: req.user,
+  });
 
   if (!findComment) return errorRes(res, 'comment not found', 400);
 
-  await CommentService.deleteComment(findComment.id);
-  return resultRes(res, findComment);
+  const deleteComment = await CommentService.deleteComment(findComment);
+  return resultRes(res, deleteComment);
 };

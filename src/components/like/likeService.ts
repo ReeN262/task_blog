@@ -3,6 +3,8 @@ import {User} from '@components/user/userEntity';
 import {getRepository} from 'typeorm';
 import {findPostById} from '@components/post/postService';
 import {findCommentById} from '@components/comment/commentService';
+import {Post} from '@components/post/postEntity';
+import {Comment} from '@components/comment/commentEntity';
 
 interface LikeI {
     entityId: number,
@@ -14,7 +16,9 @@ interface LikeI {
 type TLike = Partial<LikeI>
 
 export const like = async (data: TLike, user: User) => {
+  const owner = 'post' === data.entityType ? new Post : new Comment;
   const addLike = await Like.create({
+    owner: owner,
     user,
     entityId: data.entityId,
     entityType: data.entityType,

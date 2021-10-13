@@ -1,5 +1,6 @@
 import {Post} from '@components/post/postEntity';
-import {DeleteResult, getRepository} from 'typeorm';
+import {getRepository} from 'typeorm';
+
 
 interface PostI {
   title: string,
@@ -63,6 +64,7 @@ export const getAllPost = async (data: InputData): Promise<Array<Post>> => {
       .orderBy({create_at: 'DESC'})
       .skip(data.skip)
       .take(data.offset)
+      .loadRelationCountAndMap('post.Count', 'post.like', 'like')
       .getMany();
 
   return getPostInArrAndSmallDescription(allPost);
@@ -77,10 +79,9 @@ export const updatePost = async (data: InputData, post: Post): Promise<Post> => 
   post.description = description || post.description;
 
   await post.save();
-
   return post;
 };
 
-export const deleteOnePost = async (postId: number): Promise<DeleteResult> => Post.delete(postId);
+export const deleteOnePost = (post: Post): Promise<Post> => Post.remove(post);
 
 export const findPostById = (id: number | string): Promise<Post | undefined> => Post.findOne(id);

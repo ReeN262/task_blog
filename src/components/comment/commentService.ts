@@ -1,7 +1,7 @@
 import {Comment} from '@components/comment/commentEntity';
 import {Post} from '@components/post/postEntity';
 import {User} from '@components/user/userEntity';
-import {DeleteResult, getRepository} from 'typeorm';
+import {getRepository} from 'typeorm';
 
 interface InputData {
   postId: string,
@@ -47,4 +47,4 @@ export const findCommentByFilter = (filter: Filter): Promise<Comment | undefined
 
 export const findCommentById = (id: string | number): Promise<Comment | undefined> => Comment.findOne(id);
 
-export const deleteComment = async (commentId: number): Promise<DeleteResult> => Comment.delete(commentId);
+export const deleteComment = async (comment: Comment): Promise<Comment> => Comment.remove(comment);

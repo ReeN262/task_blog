@@ -43,10 +43,13 @@ export const updatePost = async (req: Request, res: Response) => {
 };
 
 export const deleteOnePost = async (req: Request, res: Response) => {
-  const userPost = await findPostByFilter({id: req.params.postId as unknown as number, user: req.user});
+  const userPost = await findPostByFilter({
+    id: req.params.postId as unknown as number,
+    user: req.user,
+  });
 
   if (!userPost) return errorRes(res, 'This is not your post', 400);
 
-  await PostService.deleteOnePost(userPost.id);
-  return resultRes(res, {deleteResult: userPost});
+  const deletePost = await PostService.deleteOnePost(userPost);
+  return resultRes(res, {deleteResult: deletePost});
 };
