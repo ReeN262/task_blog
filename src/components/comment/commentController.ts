@@ -6,7 +6,7 @@ import {getAllPostComments} from './commentService';
 
 export const createComment = async (req: Request, res: Response) => {
   const _post = await findPostById(req.body.post);
-  if (!_post) return errorRes(res, 'post undefined', 400);
+  if (!_post) return errorRes(res, 'post not found', 404);
 
   const {user, post, ...rest} = await CommentService.createNewComment(_post, req.user, req.body.description);
   return resultRes(res, {
@@ -21,7 +21,7 @@ export const createComment = async (req: Request, res: Response) => {
 export const allPostComments = async (req: Request, res: Response) => {
   const post = await findPostById(req.query.postId as string);
 
-  if (!post) return errorRes(res, 'post undefined', 400);
+  if (!post) return errorRes(res, 'post not found', 404);
 
   const posts = await getAllPostComments(req.query);
   return resultRes(res, {data: posts});
@@ -41,11 +41,11 @@ export const updateComment = async (req: Request, res: Response) => {
 
 export const deleteComment = async (req: Request, res: Response) => {
   const findComment = await CommentService.findCommentByFilter({
-    id: req.body.commentId,
+    id: req.params.id as unknown as string,
     user: req.user,
   });
 
-  if (!findComment) return errorRes(res, 'comment not found', 400);
+  if (!findComment) return errorRes(res, 'comment not found', 404);
 
   const deleteComment = await CommentService.deleteComment(findComment);
   return resultRes(res, deleteComment);

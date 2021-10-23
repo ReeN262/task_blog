@@ -23,7 +23,7 @@ export const allLikes = async (req: Request, res: Response) => {
 
 export const removeLike = async (req: Request, res: Response) => {
   const like = await LikeService.findLike(req.user, req.query);
-  if (!like) return errorRes(res, 'like is not found', 400);
+  if (!like) return errorRes(res, 'like is not found', 404);
 
   const remove = await LikeService.removeLike(like);
   return resultRes(res, {removeLike: remove});

@@ -13,16 +13,21 @@ import {PolymorphicChildInterface} from 'typeorm-polymorphic/dist/polymorphic.in
 
 @Entity('likes')
 export class Like extends BaseEntity implements PolymorphicChildInterface {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @PolymorphicParent(() => [Comment, Post])
   owner: Comment | Post
 
-  @Column()
-  entityId: number;
+  @Column({
+    name: 'entityid',
+    type: 'uuid',
+  })
+  entityId: string;
 
-  @Column()
+  @Column({
+    name: 'entitytype',
+  })
   entityType: string;
 
   @CreateDateColumn({

@@ -1,0 +1,28 @@
+version: "3"
+services:
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - 6379:6379
+  db:
+    image: postgres
+    container_name: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - ./pg_data:/var/liv/postgressql/data/pgdata
+    environment:
+      POSTGRES_PASSWORD: $PASSWORD
+      POSTGRES_USER: $DB_USER
+      POSTGRES_DB: $DATABASE
+      PGDATA: /pg_data:/var/liv/postgressql/data/pgdata
+    restart: always
+  web:
+    image: bandapixels/blogs
+    container_name: app
+    ports:
+      - 8080:8080
+    environment:
+      REDIS_HOST: redis
+      DB_HOST: db

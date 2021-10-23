@@ -4,15 +4,14 @@ import {Post} from '@components/post/postEntity';
 import {Like} from '@components/like/likeEntity';
 import {Comment} from '@components/comment/commentEntity';
 
-
 const connection = async () => {
   await createConnection({
     type: 'postgres',
-    host: 'localhost',
+    host: '172.17.0.1',
     port: 5432,
-    username: process.env.DB_USER,
-    password: process.env.PASSWORD,
-    database: process.env.DATABASE,
+    username: process.env.TEST_DB_USER,
+    password: process.env.TEST_PASSWORD,
+    database: process.env.TEST_DB,
     entities: [User, Post, Like, Comment],
     synchronize: true,
     logging: false,
@@ -20,3 +19,4 @@ const connection = async () => {
 };
 
 export = connection()
+

@@ -5,12 +5,13 @@ import {User} from '@components/user/userEntity';
 
 declare module 'express-session' {
   export interface SessionData {
-    userId: number;
+    userId: string;
   }
 }
 
 export const signUp = async (req: Request, res: Response) => {
-  const findUser = await UserService.findUserByFilter(req.body);
+  const {email='', phone=''} = req.body;
+  const findUser = await UserService.findUserByFilter({email: email, phone: phone});
 
   if (findUser) return errorRes(res, 'Its login already in use', 400);
 

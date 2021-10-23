@@ -5,43 +5,38 @@ import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
 
-import connectionDb from './db';
 import {userRouter} from '@components/user/userRouter';
 import {postRouter} from '@components/post/postRouter';
 import {commentRouter} from '@components/comment/commentRouter';
 import likeRouter from '@components/like/likeRouter';
+import connectionDb from './db';
 
-const client = redis.createClient();
+export const app = express();
 const redisStore = connectRedis(session);
-const app = express();
+const client = redis.createClient({
+  host: '172.17.0.1',
+  port: 6379,
+});
 
 const main = async () => {
-  try {
-    await connectionDb;
-    console.log('Database connection');
-
-    app.use(cookieParser());
-    app.use(express.json());
-    app.use(session({
-      store: new redisStore({
-        host: 'localhost',
-        port: 6379,
-        client: client,
-      }),
-      secret: `${process.env.SECRET}`,
-      resave: false,
-      saveUninitialized: true,
-      // cookie: {secure: true},
-    }));
-    app.use('/like', likeRouter);
-    app.use('/account', userRouter);
-    app.use('/post', postRouter);
-    app.use('/comment', commentRouter);
-
-    app.listen(process.env.PORT, () => console.log('Server start'));
-  } catch (error) {
-    console.log(`Connection error: ${error}`);
-  }
+  await connectionDb;
+  app.use(cookieParser());
+  app.use(express.json());
+  app.use(session({
+    store: new redisStore({
+      client: client,
+    }),
+    secret: `${process.env.SECRET}`,
+    resave: false,
+    saveUninitialized: true,
+    // cookie: {secure: true},
+  }));
+  app.use('/like', likeRouter);
+  app.use('/account', userRouter);
+  app.use('/post', postRouter);
+  app.use('/comment', commentRouter);
+  app.listen(8080);
 };
 
 main();
+

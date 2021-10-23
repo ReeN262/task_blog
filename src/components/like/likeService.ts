@@ -7,7 +7,7 @@ import {Post} from '@components/post/postEntity';
 import {Comment} from '@components/comment/commentEntity';
 
 interface LikeI {
-    entityId: number,
+    entityId: string,
     entityType: string
     skip?: number,
     offset?: number,
@@ -37,9 +37,9 @@ export const findLike = (user: User, data: TLike): Promise<Like | undefined> => 
 
 export const checkPostOrComment = async (data: TLike): Promise<boolean> => {
   if (data.entityType === 'post') {
-    return await findPostById(data.entityId as number) !== undefined;
+    return await findPostById(data.entityId as unknown as string) !== undefined;
   } else {
-    return await findCommentById(data.entityId as number) !== undefined;
+    return await findCommentById(data.entityId as string) !== undefined;
   }
 };
 
@@ -55,13 +55,3 @@ export const getAllLike = async (data: TLike): Promise<Array<Like>> => getReposi
 
 export const removeLike = async (like: Like): Promise<Like> => Like.remove(like);
 
-// export const countLikeByPost = async (postId: number) => {
-//   return await Like
-//       .createQueryBuilder('like')
-//       .where({
-//         entityId: postId,
-//         entityType: 'post',
-//       })
-//       .select('COUNT(like.entityId)', 'count')
-//       .getRawOne();
-// };

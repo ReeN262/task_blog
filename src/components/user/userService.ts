@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import {User} from './userEntity';
 import {getRepository} from 'typeorm';
 
-type UserId = number;
+type UserId = string;
 
 interface InputData {
   name: string,
@@ -28,7 +28,7 @@ export const createNewUser = async (data: InputData): Promise<UserId> => {
 };
 
 export const findForUserByLogin = (login: string): Promise<User | undefined> => getRepository(User)
-    .createQueryBuilder('user')
+    .createQueryBuilder()
     .where({email: login})
     .orWhere({phone: login})
     .getOne();
@@ -37,7 +37,7 @@ export const passwordVerification = (verifyPassword: string, userPassword: strin
   return bcrypt.compareSync(verifyPassword, userPassword);
 };
 
-export const findUserByFilter = async (filter: string): Promise<User | undefined> => {
+export const findUserByFilter = async (filter: { phone: string; email: string }): Promise<User | undefined> => {
   return await User.findOne(filter);
 };
 

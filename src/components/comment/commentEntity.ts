@@ -12,8 +12,8 @@ import {Post} from '@components/post/postEntity';
 
 @Entity('comment')
 export class Comment extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({
     length: 300,

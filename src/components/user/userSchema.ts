@@ -8,7 +8,7 @@ export const userSignUpSchema = z.object({
   phone: z.string()
       .regex(/^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\\s./0-9]*$/g, 'invalid phone number')
       .min(7)
-      .optional(), //
+      .optional(),
   password: z.string()
       .min(6, 'minimum 6 length')
       .max(100)

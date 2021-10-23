@@ -13,8 +13,8 @@ import {Comment} from '@components/comment/commentEntity';
 
 @Entity('post')
 export class Post extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({
     length: 200,
@@ -37,7 +37,7 @@ export class Post extends BaseEntity {
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.post)
-  @JoinColumn()
+  @JoinColumn({name: 'userid'})
   user: User;
 
   @OneToMany(() => Comment, (comment) => comment.post)

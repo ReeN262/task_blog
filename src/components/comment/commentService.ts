@@ -2,6 +2,7 @@ import {Comment} from '@components/comment/commentEntity';
 import {Post} from '@components/post/postEntity';
 import {User} from '@components/user/userEntity';
 import {getRepository} from 'typeorm';
+import {Like} from '@components/like/likeEntity';
 
 interface InputData {
   postId: string,
@@ -9,7 +10,7 @@ interface InputData {
   skip: number,
 }
 interface FilterI {
-  id: number,
+  id: string,
   user: User;
 }
 type Filter = Partial<FilterI>
@@ -26,11 +27,15 @@ export const createNewComment = async (post: Post, user: User, description: stri
 };
 
 export const getAllPostComments = (data: Partial<InputData>): Promise<Array<Comment>> => getRepository(Comment)
-    .createQueryBuilder()
+    .createQueryBuilder('comment')
+    .select('comment.*')
+    .addSelect('COUNT(likes.entityId)', 'countLikes')
+    .leftJoin(Like, 'likes', 'likes.entityId = comment.id')
     .where({post: data.postId})
     .skip(data.skip)
     .take(data.offset)
-    .getMany();
+    .groupBy('comment.id')
+    .getRawMany();
 
 export const update = async (commentId: string, description: string): Promise<Comment> => {
   const updated = await getRepository(Comment)

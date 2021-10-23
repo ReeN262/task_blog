@@ -10,10 +10,10 @@ import {Post} from '@components/post/postEntity';
 import {Comment} from '@components/comment/commentEntity';
 import {Like} from '@components/like/likeEntity';
 
-@Entity('user')
+@Entity('users')
 export class User extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({
     length: 50,
@@ -39,7 +39,7 @@ export class User extends BaseEntity {
   @JoinColumn()
   post: Post[];
 
-  @OneToMany(() => Like, (like) => like.user)
+  @OneToMany(() => Like, (likes) => likes.user)
   @JoinColumn()
   likes: Like[];
 

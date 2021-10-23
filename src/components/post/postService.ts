@@ -1,5 +1,6 @@
 import {Post} from '@components/post/postEntity';
 import {getRepository} from 'typeorm';
+import {Like} from '@components/like/likeEntity';
 
 interface PostI {
   title: string,
@@ -10,14 +11,14 @@ interface PostI {
   offset: number,
 }
 interface UserI {
-  id?: number;
+  id?: string;
   name?: string,
   password?: string,
   email?: string,
   phone?: string,
 }
 interface FilterI {
-  id: number,
+  id: string,
   user: UserI;
 }
 type Filter = Partial<FilterI>
@@ -34,25 +35,39 @@ export const createPost = async (data: InputData, user: UserI): Promise<Post> =>
   return newPost;
 };
 
-export const getOnePost = async (postId: string): Promise<Post | undefined> => await Post.findOne(postId);
+export const getOnePost = (postId: string): Promise<Post | undefined> => getRepository(Post)
+    .createQueryBuilder('post')
+    .select('post.*')
+    .addSelect('COUNT(likes.entityId)', 'countLikes')
+    .leftJoin(Like, 'likes', 'likes.entityId = post.id')
+    .where({id: postId})
+    .groupBy('post.id, likes.id')
+    .getRawOne();
 
 export const getPostInArrAndSmallDescription = (arrPosts: any): Array<Post> => arrPosts.map((post: any) => {
   return {
     id: post.id,
     tittle: post.title,
-    createdAt: post.createdAt,
     description: post.description.length < 200 ? post.description : `${post.description.substr(0, 200)}...`,
+    user: post.userId,
+    countLikes: post.countLikes,
+    createdAt: post.create_at,
+    updatedAt: post.update_at,
   };
 });
 
 export const getAllUserPost = async (data: InputData, user: UserI): Promise<Array<Post>> => {
   const arrPosts = await getRepository(Post)
-      .createQueryBuilder()
-      .where({user: user})
-      .orderBy({create_at: 'DESC'})
+      .createQueryBuilder('post')
+      .select('post.*')
+      .addSelect('COUNT(likes.entityId)', 'countLikes')
+      .leftJoin(Like, 'likes', 'likes.entityId = post.id')
+      .andWhere({user: user})
       .skip(data.skip)
       .take(data.offset)
-      .getMany();
+      .orderBy({create_at: 'DESC'})
+      .groupBy('post.id')
+      .getRawMany();
 
   return getPostInArrAndSmallDescription(arrPosts);
 };
@@ -60,10 +75,14 @@ export const getAllUserPost = async (data: InputData, user: UserI): Promise<Arra
 export const getAllPost = async (data: InputData): Promise<Array<Post>> => {
   const allPost = await getRepository(Post)
       .createQueryBuilder('post')
+      .select('post.*')
+      .addSelect('COUNT(likes.entityId)', 'countLikes')
+      .leftJoin(Like, 'likes', 'likes.entityId = post.id')
       .orderBy({create_at: 'DESC'})
       .skip(data.skip)
       .take(data.offset)
-      .getMany();
+      .groupBy('post.id')
+      .getRawMany();
 
   return getPostInArrAndSmallDescription(allPost);
 };
@@ -82,4 +101,4 @@ export const updatePost = async (data: InputData, post: Post): Promise<Post> => 
 
 export const deleteOnePost = (post: Post): Promise<Post> => Post.remove(post);
 
-export const findPostById = (id: number | string): Promise<Post | undefined> => Post.findOne(id);
+export const findPostById = (id: string): Promise<Post | undefined> => Post.findOne(id);
