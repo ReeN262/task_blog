@@ -1,10 +1,10 @@
 {
-  "name": "students-sandbox",
+  "name": "blog",
   "version": "1.0.0",
-  "description": "",
+  "description": "blog",
   "main": "index.ts",
   "scripts": {
-    "supertest": "jest",
+    "test": "jest",
     "start": "ts-node -r tsconfig-paths/register index.ts",
     "start:watch": "nodemon -r tsconfig-paths/register index.ts"
   },

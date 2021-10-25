@@ -5,17 +5,18 @@ import connectionDb from '../../db';
 import {User} from '@components/user/userEntity';
 import redis from 'redis';
 
-const redisClient = redis.createClient({
-  host: '172.17.0.1',
-  port: 6379,
-});
 
-const clearDatabaseAndRedis = async () => {
-  await connectionDb;
-  await getManager().query('TRUNCATE users CASCADE');
-  redisClient.flushall('ASYNC');
-};
 describe('/user', ()=> {
+  const redisClient = redis.createClient({
+    host: '172.17.0.1',
+    port: 6379,
+  });
+
+  const clearDatabaseAndRedis = async () => {
+    await connectionDb;
+    await getManager().query('TRUNCATE users CASCADE');
+    redisClient.flushall('ASYNC');
+  };
   // const sessionId = res.headers['set-cookie'][0].split('%3A')[1].split('.')[0];
   // const redisSession = (redisClient.get(`sess:${sessionId}`));
   afterEach(() => {
@@ -29,8 +30,9 @@ describe('/user', ()=> {
       expect(res.headers['set-cookie'][0]).not.toBeNull();
       expect(res.error).toBe(false);
       expect(res.body).not.toBeUndefined();
-      expect(await User.findOne()).not.toBeUndefined();
-      expect(res.body).toStrictEqual({success: true});
+      const user = await User.findOne() as User;
+      expect(user).not.toBeUndefined();
+      expect(res.body).toStrictEqual({id: user.id});
     } );
   });
 
@@ -44,8 +46,9 @@ describe('/user', ()=> {
       expect(res.statusCode).toBe(200);
       expect(res.headers['set-cookie'][0]).not.toBeNull();
       expect(res.error).toBe(false);
-      expect(res.body).not.toBeUndefined();
-      expect(res.body).toStrictEqual({success: true});
+      const user = await User.findOne() as User;
+      expect(user).not.toBeUndefined();
+      expect(res.body).toStrictEqual({id: user.id});
     });
   });
 });

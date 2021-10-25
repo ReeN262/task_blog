@@ -47,9 +47,9 @@ export const getOnePost = (postId: string): Promise<Post | undefined> => getRepo
 export const getPostInArrAndSmallDescription = (arrPosts: any): Array<Post> => arrPosts.map((post: any) => {
   return {
     id: post.id,
-    tittle: post.title,
+    title: post.title,
     description: post.description.length < 200 ? post.description : `${post.description.substr(0, 200)}...`,
-    user: post.userId,
+    userId: post.userid,
     countLikes: post.countLikes,
     createdAt: post.create_at,
     updatedAt: post.update_at,

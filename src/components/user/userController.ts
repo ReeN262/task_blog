@@ -15,9 +15,11 @@ export const signUp = async (req: Request, res: Response) => {
 
   if (findUser) return errorRes(res, 'Its login already in use', 400);
 
-  req.session.userId = await UserService.createNewUser(req.body);
+  const userId = await UserService.createNewUser(req.body);
 
-  return resultRes(res, {success: true});
+  req.session.userId = userId;
+
+  return resultRes(res, {id: userId});
 };
 
 export const signIn = async (req: Request, res: Response) => {
@@ -27,7 +29,7 @@ export const signIn = async (req: Request, res: Response) => {
   if (!verification) return errorRes(res, 'Invalid login or password', 400);
 
   req.session.userId = user.id;
-  return resultRes(res, {success: true});
+  return resultRes(res, {id: user.id});
 };
 
 export const logout = async (req: Request, res: Response) => {

@@ -10,11 +10,12 @@ export const createComment = async (req: Request, res: Response) => {
 
   const {user, post, ...rest} = await CommentService.createNewComment(_post, req.user, req.body.description);
   return resultRes(res, {
-    data: {
-      user: user.id,
-      post: post.id,
-      comment: rest,
-    },
+    id: rest.id,
+    user: user.id,
+    post: post.id,
+    description: rest.description,
+    createdAt: rest.createdAt,
+    updatedAt: rest.updatedAt,
   });
 };
 
@@ -24,7 +25,7 @@ export const allPostComments = async (req: Request, res: Response) => {
   if (!post) return errorRes(res, 'post not found', 404);
 
   const posts = await getAllPostComments(req.query);
-  return resultRes(res, {data: posts});
+  return resultRes(res, posts);
 };
 
 export const updateComment = async (req: Request, res: Response) => {

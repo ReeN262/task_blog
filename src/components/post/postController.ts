@@ -6,7 +6,14 @@ import {findPostByFilter} from './postService';
 
 export const createPost = async (req: Request, res: Response) => {
   const post = await PostService.createPost(req.body, req.user);
-  return resultRes(res, post);
+  return resultRes(res, {
+    id: post.id,
+    title: post.title,
+    description: post.description,
+    user: post.user.id,
+    createAt: post.createdAt,
+    updateAt: post.updatedAt,
+  });
 };
 
 export const getOnePost = async (req: Request, res: Response) => {
