@@ -36,7 +36,7 @@ export const updateComment = async (req: Request, res: Response) => {
 
   if (!isAuthor) return errorRes(res, 'you not is author', 400);
 
-  const updatedPost = await CommentService.update(req.body.commentId, req.body.description);
+  const updatedPost = await CommentService.updateComment(req.body.commentId, req.body.description);
   return resultRes(res, updatedPost);
 };
 

@@ -3,23 +3,25 @@ import {getRepository} from 'typeorm';
 import {Like} from '@components/like/likeEntity';
 
 interface PostI {
-  title: string,
-  description: string,
-  userId: number,
-  postId: number | string;
-  skip: number,
-  offset: number,
+  title?: string,
+  description?: string,
+  userId?: number,
+  postId?: number | string;
+  skip?: number,
+  offset?: number,
 }
 interface UserI {
-  id?: string;
-  name?: string,
-  password?: string,
-  email?: string,
-  phone?: string,
+  id: string;
+  name: string,
+  password: string,
+  email: string,
+  phone: string,
 }
 interface FilterI {
-  id: string,
-  user: UserI;
+  id?: string,
+  user?: UserI;
+  title?: string,
+  description?: string,
 }
 type Filter = Partial<FilterI>
 type InputData = Partial<PostI>
@@ -62,7 +64,7 @@ export const getAllUserPost = async (data: InputData, user: UserI): Promise<Arra
       .select('post.*')
       .addSelect('COUNT(likes.entityId)', 'countLikes')
       .leftJoin(Like, 'likes', 'likes.entityId = post.id')
-      .andWhere({user: user})
+      .where({user: user})
       .skip(data.skip)
       .take(data.offset)
       .orderBy({create_at: 'DESC'})

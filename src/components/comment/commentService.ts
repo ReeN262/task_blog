@@ -11,7 +11,8 @@ interface InputData {
 }
 interface FilterI {
   id: string,
-  user: User;
+  user: User,
+  description?: string,
 }
 type Filter = Partial<FilterI>
 
@@ -37,11 +38,11 @@ export const getAllPostComments = (data: Partial<InputData>): Promise<Array<Comm
     .groupBy('comment.id')
     .getRawMany();
 
-export const update = async (commentId: string, description: string): Promise<Comment> => {
+export const updateComment = async (commentId: string, newDescription: string): Promise<Comment> => {
   const updated = await getRepository(Comment)
       .createQueryBuilder('comment')
       .update(Comment)
-      .set({description: description})
+      .set({description: newDescription})
       .where({id: commentId})
       .returning('*')
       .execute();

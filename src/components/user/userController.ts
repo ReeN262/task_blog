@@ -15,11 +15,11 @@ export const signUp = async (req: Request, res: Response) => {
 
   if (findUser) return errorRes(res, 'Its login already in use', 400);
 
-  const userId = await UserService.createNewUser(req.body);
+  const user = await UserService.createNewUser(req.body);
 
-  req.session.userId = userId;
+  req.session.userId = user.id;
 
-  return resultRes(res, {id: userId});
+  return resultRes(res, {id: user.id});
 };
 
 export const signIn = async (req: Request, res: Response) => {

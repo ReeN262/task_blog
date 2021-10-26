@@ -24,6 +24,8 @@ export const like = async (data: TLike, user: User) => {
     entityType: data.entityType,
   });
   await addLike.save();
+
+  return true;
 };
 
 export const findLike = (user: User, data: TLike): Promise<Like | undefined> => getRepository(Like)
