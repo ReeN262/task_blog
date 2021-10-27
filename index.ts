@@ -9,7 +9,7 @@ import {userRouter} from '@components/user/userRouter';
 import {postRouter} from '@components/post/postRouter';
 import {commentRouter} from '@components/comment/commentRouter';
 import likeRouter from '@components/like/likeRouter';
-import connectionDb from './db';
+import './db';
 
 export const app = express();
 const redisStore = connectRedis(session);
@@ -19,7 +19,7 @@ const client = redis.createClient({
 });
 
 const main = async () => {
-  await connectionDb;
+  // settings
   app.use(cookieParser());
   app.use(express.json());
   app.use(session({
@@ -31,11 +31,15 @@ const main = async () => {
     saveUninitialized: true,
     // cookie: {secure: true},
   }));
+
+  // routers
   app.use('/like', likeRouter);
   app.use('/account', userRouter);
   app.use('/post', postRouter);
   app.use('/comment', commentRouter);
-  app.listen(8080);
+
+  // start server
+  app.listen(process.env.PORT, () => console.log(`Server start`));
 };
 
 main();
