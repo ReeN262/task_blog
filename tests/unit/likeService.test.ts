@@ -19,12 +19,12 @@ describe('TEST like service', () => {
   let user: User;
   let data: LikeI;
   const testPostData = {
-    title: 'test',
+    title: 'testLike',
     description: 'tests',
   };
   const restUserData = {
     name: 'test',
-    email: 'test@test.com',
+    email: 'tes12t@test.com',
     password: 'test',
     phone: '123345345',
   };
@@ -45,7 +45,7 @@ describe('TEST like service', () => {
     await Like.findOne() as Like;
   });
   const clearDatabase = async () => {
-    await getManager().query('truncate users cascade');
+    await getManager().remove(user);
   };
   afterEach(async () => {
     await clearDatabase();

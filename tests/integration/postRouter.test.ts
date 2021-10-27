@@ -1,9 +1,10 @@
 import request from 'supertest';
-import {getManager} from 'typeorm';
+import {getRepository} from 'typeorm';
 
 import connectionDb from '../../db';
 import {Post} from '@components/post/postEntity';
 import redis from 'redis';
+import {User} from '@components/user/userEntity';
 
 
 describe('/post', () => {
@@ -11,21 +12,28 @@ describe('/post', () => {
     host: '172.17.0.1',
     port: 6379,
   });
-
   let userId: string;
   let postId: string;
   let cookie: string[];
   const api = request('localhost:8080');
+  const testData = {
+    title: 'post',
+    description: 'test',
+  };
+
+  beforeAll(async () => {
+    await connectionDb;
+  });
 
   const clearDatabaseAndRedis = async () => {
-    await connectionDb;
-    await getManager().query('TRUNCATE users CASCADE');
-    redisClient.flushall('ASYNC');
+    await getRepository(User).delete(userId);
+    const sessionId = cookie[0].split('%3A')[1].split('.')[0];
+    redisClient.del(`sess:${sessionId}`);
   };
 
   beforeEach(async () => {
     const res = await api.post('/account/sign-up')
-        .send({name: 'post', password: '123banda', phone: '+2-222-555-0194'});
+        .send({name: 'post', password: '123banda', phone: '+2-24-555-0194'});
     cookie = res.headers['set-cookie'];
     userId = res.body.id;
   });
@@ -34,7 +42,7 @@ describe('/post', () => {
   });
   describe('POST /post/create', () => {
     test('create post', async () => {
-      const data = {title: 'test', description: 'test'};
+      const data = {title: 'postgres', description: 'test'};
       const res = await api.post('/post/create')
           .set('Cookie', cookie)
           .send(data);
@@ -59,7 +67,7 @@ describe('/post', () => {
     beforeEach(async () => {
       const res = await api.post('/post/create')
           .set('Cookie', cookie)
-          .send({title: 'post', description: 'test'});
+          .send(testData);
       postId = res.body.id;
     });
     describe('GET /post/getOne', () => {
@@ -72,8 +80,8 @@ describe('/post', () => {
         expect(await Post.findOne(postId)).not.toBeUndefined();
         expect(res.body).toEqual(
             expect.objectContaining({
-              title: 'post',
-              description: 'test',
+              title: testData.title,
+              description: testData.description,
               id: postId,
               userid: userId,
               countLikes: '0',
@@ -92,8 +100,8 @@ describe('/post', () => {
         expect(res.body).toEqual(
             expect.arrayContaining([
               expect.objectContaining({
-                title: 'post',
-                description: 'test',
+                title: testData.title,
+                description: testData.description,
                 id: postId,
                 userId: userId,
                 countLikes: '0',
@@ -113,8 +121,8 @@ describe('/post', () => {
         expect(res.body).toEqual(
             expect.arrayContaining([
               expect.objectContaining({
-                title: 'post',
-                description: 'test',
+                title: testData.title,
+                description: testData.description,
                 id: postId,
                 userId: userId,
                 countLikes: '0',
@@ -144,7 +152,6 @@ describe('/post', () => {
     });
     describe('DELETE /post/delete', () => {
       test('remove post', async () => {
-        console.log(await Post.findOne());
         const res = await api.delete(`/post/delete/${postId}`)
             .set('Cookie', cookie);
         expect(res.statusCode).toBe(200);
@@ -153,8 +160,8 @@ describe('/post', () => {
         expect(await Post.findOne(postId)).toBeUndefined();
         expect(res.body).toEqual(
             expect.objectContaining({
-              title: 'post',
-              description: 'test',
+              title: testData.title,
+              description: testData.description,
             }),
         );
       });

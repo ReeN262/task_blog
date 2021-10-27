@@ -19,19 +19,19 @@ describe('TEST post service', () => {
   let comment: Comment;
 
   const testPostData = {
-    title: 'test',
+    title: 'testComment',
     description: 'tests',
   };
   const testUserData = {
     name: 'test',
-    email: 'test@test.com',
+    email: 'test@tests.com',
     password: 'test',
-    phone: '123345345',
+    phone: '123342345',
   };
   const testCommentDescription = 'test';
 
   const clearDatabase = async () => {
-    await getManager().query('TRUNCATE users CASCADE');
+    await getManager().remove(user);
   };
   beforeAll(async () => {
     await connectionDb;

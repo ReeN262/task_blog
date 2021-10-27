@@ -2,7 +2,8 @@ import request from 'supertest';
 import {Like} from '@components/like/likeEntity';
 import redis from 'redis';
 import connectionDb from '../../db';
-import {getManager} from 'typeorm';
+import {getRepository} from 'typeorm';
+import {User} from '@components/user/userEntity';
 
 describe('/likes', () => {
   const redisClient = redis.createClient({
@@ -14,16 +15,20 @@ describe('/likes', () => {
   let cookie: string[];
   let postId: string;
   let userId: string;
+  const entityType = 'post';
 
   const clearDatabaseAndRedis = async () => {
-    await connectionDb;
-    await getManager().query('TRUNCATE users CASCADE');
-    redisClient.flushall('ASYNC');
+    await getRepository(User).delete(userId);
+    const sessionId = cookie[0].split('%3A')[1].split('.')[0];
+    redisClient.del(`sess:${sessionId}`);
   };
+  beforeAll(async () => {
+    await connectionDb;
+  });
 
   beforeEach(async () => {
     const res = await api.post('/account/sign-up')
-        .send({name: 'test', password: '123banda', phone: '+1-222-555-0194'});
+        .send({name: 'test', password: '123banda', phone: '+1-222-5535-0194'});
     expect(res.statusCode).toBe(200);
     cookie = res.headers['set-cookie'];
     userId = res.body.id;
@@ -39,7 +44,7 @@ describe('/likes', () => {
 
   describe('POST /addLikePost', () => {
     test('add like to post', async () => {
-      const res = await api.post(`like/addlike/?entityId${postId}=&entityType=post`)
+      const res = await api.post(`/like/addlike/?entityId=${postId}&entityType=${entityType}`)
           .set('Cookie', cookie);
       expect(res.statusCode).toBe(200);
       expect(res.error).toBe(false);
@@ -49,12 +54,12 @@ describe('/likes', () => {
   });
   describe('rest', () => {
     beforeEach(async () => {
-      await api.post(`like/addlike/?entityId${postId}=&entityType=post`)
+      await api.post(`/like/addlike/?entityId=${postId}&entityType=${entityType}`)
           .set('Cookie', cookie);
     });
     describe('POST /allLike', () => {
       test('return like to post', async () => {
-        const res = await api.post(`like/allLike/?entityId${postId}=&entityType=post`)
+        const res = await api.get(`/like/getLike/?entityId=${postId}&entityType=${entityType}`)
             .set('Cookie', cookie);
         expect(res.statusCode).toBe(200);
         expect(res.error).toBe(false);
@@ -63,10 +68,8 @@ describe('/likes', () => {
         expect(res.body).toEqual(
             expect.arrayContaining([
               expect.objectContaining({
-                entityType: 'post',
+                entityType: entityType,
                 entityId: postId,
-                userId: userId,
-                countLikes: '0',
               }),
             ]),
         );
@@ -75,7 +78,7 @@ describe('/likes', () => {
 
     describe('POST /removeLike', () => {
       test('add like to post', async () => {
-        const res = await api.post(`like/removeLike/?entityId${postId}=&entityType=post`)
+        const res = await api.delete(`/like/removeLike/?entityId=${postId}&entityType=post`)
             .set('Cookie', cookie);
         expect(res.statusCode).toBe(200);
         expect(res.error).toBe(false);

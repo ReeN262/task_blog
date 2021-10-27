@@ -3,7 +3,10 @@ import {getManager} from 'typeorm';
 import {User} from '@components/user/userEntity';
 import {Post} from '@components/post/postEntity';
 import {
-  createPost, deleteOnePost, findPostByFilter, findPostById,
+  createPost,
+  deleteOnePost,
+  findPostByFilter,
+  findPostById,
   getAllPost,
   getAllUserPost,
   getOnePost,
@@ -14,19 +17,21 @@ describe('TEST post service', () => {
   let post: Post;
   let user: User;
   const testPostData = {
-    title: 'test',
-    description: 'tests',
+    title: 'testPost',
+    description: 'testsPost',
   };
+
   const clearDatabase = async () => {
-    await getManager().query('TRUNCATE users CASCADE');
+    await getManager().remove(user);
   };
+
   beforeAll(async () => {
     await connectionDb;
   });
   beforeEach( async () => {
     user = await User.create({
-      name: 'test',
-      email: 'test@test.com',
+      name: 'testPost',
+      email: 'test@testPost.com',
       password: 'test',
       phone: '123345345',
     });
@@ -38,8 +43,8 @@ describe('TEST post service', () => {
   afterEach(async () => {
     await clearDatabase();
   });
-  describe('CreateNewUser Function', () => {
-    test('return new user', async () => {
+  describe('CreateNewPost Function', () => {
+    test('return new post', async () => {
       const data = {
         title: 'fixsiki',
         description: 'hello',
@@ -112,11 +117,11 @@ describe('TEST post service', () => {
   });
   describe('UpdatePost Function', () => {
     test('return updated post', async () => {
-      const data = {
+      const updData = {
         title: 'fixsiki_2.0',
         description: 'hello',
       };
-      expect(await updatePost(data, post)).toEqual(expect.objectContaining(data));
+      expect(await updatePost(updData, post)).toEqual(expect.objectContaining(updData));
     });
   });
   describe('DeleteOnePost Function', () => {

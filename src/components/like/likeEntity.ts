@@ -35,7 +35,7 @@ export class Like extends BaseEntity implements PolymorphicChildInterface {
   })
   createdAt: Date;
 
-  @ManyToOne(() => User, (user) => user.likes)
+  @ManyToOne(() => User, (user) => user.likes, {onDelete: 'CASCADE'})
   @JoinColumn({
     name: 'userId',
   })

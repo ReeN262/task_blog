@@ -36,11 +36,11 @@ export class Post extends BaseEntity {
   })
   updatedAt: Date;
 
-  @ManyToOne(() => User, (user) => user.post)
+  @ManyToOne(() => User, (user) => user.post, {onDelete: 'CASCADE'})
   @JoinColumn({name: 'userid'})
   user: User;
 
-  @OneToMany(() => Comment, (comment) => comment.post)
+  @OneToMany(() => Comment, (comment) => comment.post, {cascade: true})
   @JoinColumn()
   comment: Comment[];
 }

@@ -1,10 +1,10 @@
 import request from 'supertest';
-import {getManager} from 'typeorm';
+import {getRepository} from 'typeorm';
 
 import connectionDb from '../../db';
-import {Post} from '@components/post/postEntity';
 import {Comment} from '@components/comment/commentEntity';
 import redis from 'redis';
+import {User} from '@components/user/userEntity';
 
 describe('/comment', () => {
   const redisClient = redis.createClient({
@@ -17,16 +17,22 @@ describe('/comment', () => {
   let userId: string;
   let cookie: string[];
   const api = request('localhost:8080');
+  const testDescription = 'comment';
 
   const clearDatabaseAndRedis = async () => {
-    await connectionDb;
-    await getManager().query('TRUNCATE users CASCADE');
-    redisClient.flushall('ASYNC');
+    await getRepository(User).delete(userId);
+    const sessionId = cookie[0].split('%3A')[1].split('.')[0];
+    redisClient.del(`sess:${sessionId}`);
   };
+
+  beforeAll(async () => {
+    await connectionDb;
+  });
+
 
   beforeEach(async () => {
     const res = await api.post('/account/sign-up')
-        .send({name: 'comment', password: '123banda', phone: '+3-222-555-0194'});
+        .send({name: 'comment', password: '123banda', phone: '+3-221-555-013'});
     cookie = res.headers['set-cookie'];
     userId = res.body.id;
 
@@ -48,11 +54,9 @@ describe('/comment', () => {
       expect(res.statusCode).toBe(200);
       expect(res.error).toBe(false);
       expect(res.body).not.toBeUndefined();
-      const comment = await Comment.findOne() as Comment;
-      expect(comment).not.toBeUndefined();
+      expect(await Comment.findOne(res.body.id)).not.toBeUndefined();
       expect(res.body).toEqual(
           expect.objectContaining( {
-            id: comment.id,
             description: data.description,
             user: userId,
             post: postId,
@@ -63,10 +67,9 @@ describe('/comment', () => {
 
   describe('get all post comments, update and delete', () => {
     beforeEach(async ()=> {
-      const {id} = await Post.findOne() as Post;
       const res = await api.post('/comment/create')
           .set('Cookie', cookie)
-          .send({post: id, description: 'comment'});
+          .send({post: postId, description: testDescription});
       commentId = res.body.id;
     });
 
@@ -77,12 +80,12 @@ describe('/comment', () => {
         expect(res.statusCode).toBe(200);
         expect(res.error).toBe(false);
         expect(res.body).not.toBeUndefined();
-        expect(await Comment.findOne()).not.toBeUndefined();
+        expect(await Comment.find()).not.toBeUndefined();
         expect(res.body).toEqual(
             expect.arrayContaining([
               expect.objectContaining({
                 id: commentId,
-                description: 'comment',
+                description: testDescription,
                 userId: userId,
                 postId: postId,
                 countLikes: '0',
@@ -94,17 +97,18 @@ describe('/comment', () => {
 
     describe('PUT /comment/update', () => {
       test('updating comment', async () => {
+        const updateData = {commentId: commentId, description: 'test2'};
         const res = await api.put(`/comment/update`)
             .set('Cookie', cookie)
-            .send({commentId: commentId, description: 'test2'});
+            .send(updateData);
         expect(res.statusCode).toBe(200);
         expect(res.error).toBe(false);
         expect(res.body).not.toBeUndefined();
-        expect(await Comment.findOne()).not.toBeUndefined();
+        expect(await Comment.findOne(commentId)).not.toBeUndefined();
         expect(res.body).toEqual(
             expect.objectContaining({
               id: commentId,
-              description: 'test2',
+              description: updateData.description,
               userId: userId,
               postId: postId,
             }),
@@ -113,16 +117,15 @@ describe('/comment', () => {
 
       describe('DELETE /comment/delete/:id', () => {
         test('remove comment', async () => {
-          const comment = await Comment.findOne(commentId) as Comment;
-          const res = await api.delete(`/comment/delete/${comment.id}`)
+          const res = await api.delete(`/comment/delete/${commentId}`)
               .set('Cookie', cookie);
           expect(res.statusCode).toBe(200);
           expect(res.error).toBe(false);
           expect(res.body).not.toBeUndefined();
-          expect(await Comment.findOne()).toBeUndefined();
+          expect(await Comment.findOne(commentId)).toBeUndefined();
           expect(res.body).toEqual(
               expect.objectContaining({
-                description: 'comment',
+                description: testDescription,
               }),
           );
         });

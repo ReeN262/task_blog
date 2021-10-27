@@ -11,9 +11,9 @@ import {User} from '@components/user/userEntity';
 
 describe('TEST user service', () => {
   const testUserDate = {
-    name: 'test',
+    name: 'test12',
     password: 'testTEST123',
-    email: 'test@test.com',
+    email: 'test@test12.com',
     phone: '',
   };
   let user: User;
