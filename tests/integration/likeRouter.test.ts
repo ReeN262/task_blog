@@ -57,24 +57,6 @@ describe('/likes', () => {
       await api.post(`/like/addlike/?entityId=${postId}&entityType=${entityType}`)
           .set('Cookie', cookie);
     });
-    describe('POST /allLike', () => {
-      test('return like to post', async () => {
-        const res = await api.get(`/like/getLike/?entityId=${postId}&entityType=${entityType}`)
-            .set('Cookie', cookie);
-        expect(res.statusCode).toBe(200);
-        expect(res.error).toBe(false);
-        expect(res.body).not.toBeUndefined();
-        expect(await Like.findOne()).not.toBeUndefined();
-        expect(res.body).toEqual(
-            expect.arrayContaining([
-              expect.objectContaining({
-                entityType: entityType,
-                entityId: postId,
-              }),
-            ]),
-        );
-      });
-    });
 
     describe('POST /removeLike', () => {
       test('add like to post', async () => {
