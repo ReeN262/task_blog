@@ -6,7 +6,7 @@ import {getAllPostComments} from './commentService';
 
 export const createComment = async (req: Request, res: Response) => {
   const _post = await findPostById(req.body.post);
-  if (!_post) return errorRes(res, 'post not found', 404);
+  if (!_post) return errorRes(res, 'post not found2', 404);
 
   const {user, post, ...rest} = await CommentService.createNewComment(_post, req.user, req.body.description);
   return resultRes(res, {
