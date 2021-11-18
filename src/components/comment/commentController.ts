@@ -22,7 +22,7 @@ export const createComment = async (req: Request, res: Response) => {
 export const allPostComments = async (req: Request, res: Response) => {
   const post = await findPostById(req.query.postId as string);
 
-  if (!post) return errorRes(res, 'post t222', 404);
+  if (!post) return errorRes(res, 'post t3', 404);
 
   const posts = await getAllPostComments(req.query);
   return resultRes(res, posts);
